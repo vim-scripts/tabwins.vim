@@ -12,7 +12,7 @@ and content ~during~ Vim sessions.
 The Developer 
   - Avoids hit-or-miss, time-consuming, manual, repetitious 
     runs of :split/:vsplit, and thought-sinks about how 
-    to produce an intended window structure
+    to produce the intended window structure
 
   - Avoids losing current configurations due to mid-session 
     reloads of backed-up Vim sessions that have preferred
@@ -21,101 +21,143 @@ The Developer
   - Avoids loss of focus from these discontinuities
 
 
-FORMS 
+FORMS
 
-  :{Tabwins cmd}   {window_dimensions}; {fill_spec,...};  {tab_option, ...}
-  :{symmetric cmd}                                         {fill_spec,...};  {tab_option, ...}
+  :{Tabwins cmd}   {window_dimensions}; {fill_spec,...};  {tab_option, ...} 
+  :{symmetric cmd}                                         {fill_spec,...};  {tab_option, ...} 
 
   Where
-      :{Tabwins cmd}   is any of :Tabwins, :TabwinsVertical, :TabwinsHorizontal
-      :{symmetric cmd} is any of the form :{V|H}IxJ or :{V|H}I 
+     :{Tabwins cmd} is any of :Tabwins, :TabwinsVertical, :TabwinsHorizontal 
+     Aliases                              :T,               :V,                        & :H 
+     About aliases, see tabwins.txt section "Configuration"/TabwinsConfiguration.
+
+     :{symmetric cmd} is any of the form :{V|H}IxJ or :{V|H}I  
+
+     'fill_spec'  
+     is a file, dir, shell/vim var, or string evaluable
+     by :execute -- see EXAMPLES
+
+     'tab_option' 
+     has Vim key:value pair syntax -- see EXAMPLES
 
   Semicolons separate arg groups, commas separate inside groups.
 
-  {window_dimensions} is the only mandatory arg, only in :{Tabwins cmd}
+  {window_dimensions} is the only mandatory arg, for :{Tabwins cmd} 
 
-  The "Usage" Section in tabwins.txt has more detail. 
+  SECTION "Usage/"TabwinsUsage IN tabwins.txt HAS MORE DETAIL. 
 
 
 EXAMPLES
 
+  >> ----------------------------------------------------------------
   >> Empty Windows 
+  >> ----------------------------------------------------------------
 
   :Tabwins 1211 
+  :T               1211 
   " For a new tab of 4 columns of 1, 2, 1, & 1 windows successively
-  " left to right, with buffers empty.
+  " left to right.
+
 
   :TabwinsHorizontal 4221 
+  :H                               4221 
   " For a new tab of 4 rows, with 4,2,2, & 1 windows successively 
-  " top to bottom, with buffers empty.
+  " top to bottom.
 
-
+  >> ----------------------------------------------------------------
   >> Populated Windows 
+  >> ----------------------------------------------------------------
 
   :Tabwins            1211; $HOME, '~/.bashrc', '~/.vimrc', '/', '/usr/bin' 
-  " Populate the buffers
-  " => 'fill_content' specs of files are automatically opened via :edit,
-  "    while specs of dirs are opened via :Explore
-  " (Specify an '' empty string for windows intended to be empty.)
+  :T                  {                   as above                        } 
+  " 'fill_content' specs of files are automatically opened via :edit,
+  " while specs of dirs are opened via :Explore
+  " (Specify the '' empty string for windows intended to be empty.)
+
 
   :Tabwins           11111; $HOME, '~/.bashrc', '~/.vimrc', '/', '/usr/bin' 
+  :T                 {                    as above                        } 
   " Same buffer content, in different window structure, of 5 cols, 
   " one window in each.
 
+
   :TabwinsHorizontal 11111; $HOME, '~/.bashrc', '~/.vimrc', '/', '/usr/bin' 
+  :H                 {                    as above                        } 
   " Flip axis priority of above to the horizontal
 
+
   :Tabwins             312; '~/.bashrc', '~/.vimrc', '~/.git', $HOME, '/', '/usr/bin' 
+  :T                   {                  as above                                  } 
 
-
-  >> Symmetric Window Structures
+  >> ----------------------------------------------------------------
+  >> Symmetric Window Structures 
+  >> ----------------------------------------------------------------
+  In a symmetric window, all secondary axis dimensions are the same.
 
   :V5x8 
   :H5x8 
+  :V6 
+  :H6 
   :V8x14 
   :H8x14 
   " Empty windows
 
+  :V5x1 
+
+
   :V5x1 $HOME, '~/.bashrc', '~/.vimrc', '/', '/usr/bin' 
   " Structure & content same as :Tabwins 11111 above
+
 
   :V5   $HOME, '~/.bashrc', '~/.vimrc', '/', '/usr/bin' 
   " Same result again: since the secondary axis has only 1 
   " window for its dimensions, V5 is available as an even
   " shorter alias.
 
-
+  >> ----------------------------------------------------------------
   >> Dimensions >9
+  >> ----------------------------------------------------------------
 
   :Tabwins [ 5, 8, 13, 21 ] 
+  :T               [ 5, 8, 13, 21 ] 
   " For a 4-column tab with 5, 8, 13, 21 windows successively left to right.
 
+
   :Tabwins [ 14, 14 ] 
-  " Alternately, :V2x14
+  :T       [ 14, 14 ] 
+  " Or, :V2x14
+
 
   :Tabwins [ 40, 30, 40, 30 ] 
+  :T               [ 40, 30, 40, 30 ] 
   " For large monitors ...
 
 
+  >> ----------------------------------------------------------------
   >> fill_specs with Multiple Commands
+  >> ----------------------------------------------------------------
 
   :Tabwins 1112;  $HOME, '~/.bashrc', '~/.vimrc', '/', 'Explore /usr/bin | resize 20' 
+  :T                {                           as above                                     } 
   " Does a :resize of the last window, via Vim '|' command concat.  If a file 
   " or dir is followed with concated commands, the caller needs to explicitly 
   " add the command that opens the file or dir, i.e. 'Explore' in this example.
 
-
+  >> ----------------------------------------------------------------
   >> Tab Options
+  >> ----------------------------------------------------------------
 
   :Tabwins 1211;  $HOME, '~/.bashrc', '~/.vimrc', '/', '/usr/bin'; 'ending_window_number' : 2 
   :Tabwins 1211;  $HOME, '~/.bashrc', '~/.vimrc', '/', '/usr/bin'; 'netrw_liststyle'      : 3 
+  :T                 {                    as above                                                                       } 
+
 
   :Tabwins 1211;  $HOME, '~/.bashrc', '~/.vimrc', '/', '/usr/bin'; 'netrw_liststyle'      : 3, 'ending_window_number' : 2 
+  :T                 {                    as above                                                                                                                       } 
   " Multiple tab_options in same command.
 
 
-
-TABWINS MENU
+TABWINS MENU 
 
   Default settings load Vim menu Tabwins, for access to selected 
   tab-builder commands.  Those and additional tab builders are 
@@ -123,8 +165,22 @@ TABWINS MENU
   only a small portion of the tab builders defined in tabwins.vim.
 
 
+HELP IN VIM 
 
-HELP IN HTML
+  :TabwinsFindTabwins loads the tabwins .vim & .txt files 
+  into a V2 window, if your Vim &runtimepath can see them.
 
-  An html version of docs/tabwins.txt is at 
-     http://htmlpreview.github.io/?https://github.com/cesheridan/tabwins/blob/master/tabwins.txt.html
+
+  :TabwinsFindTabwins is in the 'Tabwins' menu.
+
+
+HELP IN HTML 
+
+  The top-level of the github repository includes an html 
+  version of this Vim .txt file, viewable in rendered form via
+    http://htmlpreview.github.io/?https://github.com/cesheridan/tabwins/blob/master/tabwins.txt.html    
+
+
+THIS PLUGIN AS ARTIFACT
+http://modcult.org/posts.html -- entry for Nov 13 2013
+
